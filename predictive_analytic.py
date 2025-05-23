@@ -9,7 +9,7 @@
 
 # ***Import Library***
 
-# In[468]:
+# In[592]:
 
 
 import pandas as pd
@@ -38,7 +38,7 @@ from sklearn.metrics import (
 
 # ***Load Dataset***
 
-# In[469]:
+# In[593]:
 
 
 #Melakuakan Load dataset Diabetes dataset.csv
@@ -49,7 +49,7 @@ df_dataset.head()
 
 # ***Melakuakn Exploratory Data Analysis - Deskripsi Variabel pada Dataset yang digunakan***
 
-# In[470]:
+# In[594]:
 
 
 #Melakukan pengecekan missing value
@@ -60,7 +60,7 @@ df_dataset.describe()
 
 # ***Menangani Missing Values dari Tiap kolom yang ada***
 
-# In[471]:
+# In[595]:
 
 
 #Cek berapa banyak nilai 0 pada tiap kolom yang ada di dataset
@@ -73,7 +73,7 @@ df_dataset.describe()
 
 # 
 
-# In[472]:
+# In[596]:
 
 
 #Menangani Outliers pada dataset kecuali kolom Outcome menggunakan IQR
@@ -96,7 +96,7 @@ sns.boxplot(x=df_dataset['Age'])
 plt.show()
 
 
-# In[473]:
+# In[597]:
 
 
 #Menerapkan IQR untuk menghilangkan outliers 
@@ -118,7 +118,7 @@ df_dataset.head()
 
 # ***Univariate Analysis***
 
-# In[474]:
+# In[598]:
 
 
 #Melakukan Univariate Analysis pada semua kolom
@@ -128,14 +128,14 @@ plt.show()
 
 # ***Exploratory Data Analysis - Multivariate Analysis***
 
-# In[475]:
+# In[599]:
 
 
 # MElakuakn pengecekan hubungan antar variabel
 sns.pairplot(df_dataset, diag_kind='kde')
 
 
-# In[476]:
+# In[600]:
 
 
 # Menggunakan heatmap untuk melihat korelasi antar variabel
@@ -148,7 +148,7 @@ plt.show()
 
 # ***Data Preparation***
 
-# In[477]:
+# In[601]:
 
 
 # Kita akan melakukan preparasi data untuk model machine learning nantinya dengan tahapan REduksi Dimensi, Pembagian Data,Standarasi data
@@ -159,7 +159,7 @@ princ_components = pca.transform(df_dataset[['Pregnancies', 'Glucose', 'Insulin'
 pca.explained_variance_ratio_.round(3)
 
 
-# In[478]:
+# In[602]:
 
 
 #Mereduksi dimensi menjadi 2 komponen utama
@@ -170,7 +170,7 @@ df_dataset.drop(['Pregnancies', 'Glucose', 'Insulin', 'BMI', 'Age'], axis=1, inp
 df_dataset.head()
 
 
-# In[479]:
+# In[603]:
 
 
 #split data menjadi data latih dan data uji
@@ -181,7 +181,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 print(f"Ukuran data latih: {x_train.shape}, Ukuran data uji: {x_test.shape}")
 
 
-# In[480]:
+# In[604]:
 
 
 # Melakukan Standarisasi data
@@ -195,61 +195,9 @@ x_test[numeric_cols] = scaler_all.transform(x_test[numeric_cols])
 
 # ***Model Development***
 
-# In[481]:
-
-
-#Kita akan melakukan pemodelan dengan 3 algoritma yaitu KNN, Random Forest, dan Boosting Algorithm
-knn = KNeighborsClassifier(n_neighbors=10)
-knn.fit(x_train, y_train)
-
-
-# In[482]:
-
-
-#membuat model prediksi dengan Random Forest
-rf = RandomForestClassifier(n_estimators=50, random_state=42, max_depth=10, n_jobs=-1)
-rf.fit(x_train, y_train)
-
-
-# In[483]:
-
-
-#membuat model prediksi dengan Boosting
-boosting = AdaBoostClassifier(learning_rate=0.05, random_state=42,algorithm="SAMME")
-boosting.fit(x_train, y_train)
-
-
-# ***MELAKUKAN SCALING***
-
-# In[484]:
-
-
-#Evaluasi ketiga model
-mse = pd.DataFrame(columns=['train_mse', 'test_mse'],
-                   index=['KNN', 'Random Forest', 'Boosting'])
-models_dict = {
-    'KNN': knn,
-    'Random Forest': rf,
-    'Boosting': boosting
-}
-for model_name, model in models_dict.items():
-    mse.loc[model_name, 'train_mse'] = mean_squared_error(y_train, model.predict(x_train))
-    mse.loc[model_name, 'test_mse'] = mean_squared_error(y_test, model.predict(x_test))
-mse
-
-
-# In[485]:
-
-
-accuracy = {}
-for model_name, model in models_dict.items():
-    print(f"Classification Report for {model_name}:")
-    print(classification_report(y_test, model.predict(x_test)))
-
-
 # ***MEALAKUKAN IMBALANCING***
 
-# In[486]:
+# In[605]:
 
 
 from imblearn.over_sampling import SMOTE
@@ -258,23 +206,30 @@ smote = SMOTE(random_state=42)
 x_train_bal, y_train_bal = smote.fit_resample(x_train, y_train)
 
 
-# In[487]:
+# In[606]:
 
 
-knn_bal = KNeighborsClassifier(n_neighbors=10)
+#Modelling dengan KNN, Random Forest, dan Boosting
+knn_bal = KNeighborsClassifier(n_neighbors=12)
 knn_bal.fit(x_train_bal, y_train_bal)
 
-rf_bal = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10, n_jobs=-1)
+rf_bal = RandomForestClassifier(n_estimators=50, random_state=42, max_depth=10, n_jobs=-1)
 rf_bal.fit(x_train_bal, y_train_bal)
 
 boosting_bal = AdaBoostClassifier(learning_rate=0.1, random_state=42, algorithm="SAMME")
 boosting_bal.fit(x_train_bal, y_train_bal)
-
+#Meyimpan model ke dalam dictionary
 models_bal = {
     'KNN_bal': knn_bal,
     'Random Forest_bal': rf_bal,
     'Boosting_bal': boosting_bal
 }
+
+
+# ***MELAKUKAN EVALUASI MODEL***
+
+# In[607]:
+
 
 # --- Evaluasi Model Balancing ---
 from sklearn.metrics import classification_report, mean_squared_error
@@ -284,7 +239,7 @@ for model_name, model in models_bal.items():
     print(classification_report(y_test, model.predict(x_test)))
 
 
-# In[488]:
+# In[608]:
 
 
 # --- Threshold Adjustment pada Random Forest Balancing ---
@@ -295,7 +250,7 @@ print("Classification Report for Random Forest_bal (threshold=0.5):")
 print(classification_report(y_test, y_pred_rf_bal_thresh_0_5))
 
 
-# In[489]:
+# In[609]:
 
 
 # --- Visualisasi MSE Model Balancing & Threshold Adjustment ---
@@ -308,7 +263,7 @@ for model_name, model in models_bal.items():
 mse_bal.loc['Random Forest (thresh=0.5)', 'test_mse'] = mean_squared_error(y_test, y_pred_rf_bal_thresh_0_5)
 
 
-# In[490]:
+# In[610]:
 
 
 fig, ax = plt.subplots()
@@ -319,7 +274,7 @@ ax.grid(zorder=0)
 plt.show()
 
 
-# In[491]:
+# In[611]:
 
 
 # --- Prediksi untuk semua Data pada Data Uji ---
