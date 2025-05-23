@@ -93,7 +93,7 @@ Pada tahap ini, dilakukan beberapa teknik data preparation agar data siap diguna
    Outlier pada fitur numerik diidentifikasi dan dihapus menggunakan metode Interquartile Range (IQR).
    *Alasan:* Outlier dapat menyebabkan model bias dan menurunkan performa prediksi.
 
-   ![1748028266711](https://file+.vscode-resource.vscode-cdn.net/c%3A/Users/pael/Documents/pengumpulan%20dicoding/Submission1_ML_Terapan/image/laporan/1748028266711.png)
+   ![1748028266711](image/laporan/1748028266711.png)
 2. **Reduksi Dimensi dengan PCA**
    Principal Component Analysis (PCA) digunakan untuk mereduksi beberapa fitur numerik menjadi dua komponen utama.
    *Alasan:* Reduksi dimensi membantu mengurangi kompleksitas data dan dapat meningkatkan performa model.
